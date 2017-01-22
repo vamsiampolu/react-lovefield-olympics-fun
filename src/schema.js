@@ -38,7 +38,7 @@ export const schema = {
 
 const Select = props => {
   console.log(props)
-  const { label, schema, options } = props
+  const { label, options } = props
   const suiOptions = options.enumOptions.map(({ label, value }) => ({ text: label, value }))
   return (<Dropdown selection text={label} options={suiOptions} />)
 }

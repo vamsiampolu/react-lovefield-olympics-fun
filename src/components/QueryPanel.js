@@ -1,6 +1,6 @@
 import React from 'react'
 import Form from 'react-jsonschema-form'
-import { schema, uiSchema, widgets } from '../schema'
+import { schema, widgets } from '../schema'
 
 export default class QueryPanel extends React.Component {
   constructor (props) {
@@ -10,7 +10,6 @@ export default class QueryPanel extends React.Component {
   render () {
     return (<Form
       schema={schema}
-      uiSchema={uiSchema}
       widgets={widgets}
     />)
   }

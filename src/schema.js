@@ -36,13 +36,17 @@ export const schema = {
   }
 }
 
+const Select = props => {
+  console.log(props)
+  const { label, schema, options } = props
+  const suiOptions = options.enumOptions.map(({ label, value }) => ({ text: label, value }))
+  return (<Dropdown selection text={label} options={suiOptions} />)
+}
+
 export const uiSchema = {
   fromYear: {
-    'ui:widget': props => {
-      console.log(props)
-      const { label, schema } = props
-      const options = schema.enum.map(item => ({ text: `${item}`, value: item }))
-     return (<Dropdown selection text={label} options={options} />)
-    }
+    'ui:widget': 'select'
   }
 }
+
+export const widgets = { 'select': Select }

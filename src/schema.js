@@ -40,25 +40,9 @@ export const uiSchema = {
   fromYear: {
     'ui:widget': props => {
       console.log(props)
-      const options = [
-        {
-          text: '1896',
-          value: 1896
-        },
-        {
-          text: '1900',
-          value: 1900
-        },
-        {
-          text: '1904',
-          value: 1904
-        },
-        {
-          text: '1908',
-          value: 1908
-        }
-      ]
-      return (<Dropdown selection options={options} />)
+      const { label, schema } = props
+      const options = schema.enum.map(item => ({ text: `${item}`, value: item }))
+     return (<Dropdown selection text={label} options={options} />)
     }
   }
 }

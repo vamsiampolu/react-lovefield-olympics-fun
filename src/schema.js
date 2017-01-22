@@ -2,6 +2,7 @@ import React from 'react'
 import { Dropdown } from 'semantic-ui-react'
 export const schema = {
   title: 'Olympic Medal Search',
+  description: 'Search for olympic medal winners by year, hosting city, country, event and more',
   type: 'object',
   properties: {
     fromYear: {
@@ -31,6 +32,55 @@ export const schema = {
         'Athens',
         'Antwerp',
         'Amsterdam'
+      ]
+    },
+    discipline: {
+      type: 'string',
+      title: 'Discipline',
+      enum: [
+        'Athletics',
+        'Archery',
+        'Artistic G.',
+        'BMX',
+        'Badminton'
+      ]
+    },
+    event: {
+      type: 'string',
+      title: 'Event',
+      enum: [
+        '+100 kg (Heavyweight)',
+        '+ 100 kg (Superheavyweight)',
+        '+ 105 kg',
+        '+ 108kg, total (Superheavyweight)'
+      ]
+    },
+    country: {
+      type: 'string',
+      title: 'Country',
+      enum: [
+        'AFG',
+        'ALG',
+        'AHO',
+        'ANZ',
+        'ARG'
+      ]
+    },
+    color: {
+      type: 'string',
+      title: 'Color',
+      enum: [
+        'Gold',
+        'Silver',
+        'Bronze'
+      ]
+    },
+    gender: {
+      type: 'string',
+      title: 'Gender',
+      enum: [
+        'Men',
+        'Women'
       ]
     }
   }

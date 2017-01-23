@@ -2,9 +2,27 @@ import './index.css'
 
 import React from 'react'
 import {render} from 'react-dom'
-import lf from 'lovefield'
-
+import co from 'co'
+import { dbPromise, insertMedals, dataExists } from './data/index'
 import App from './App'
-import columnDomains from './data/column_domains'
+import medals from './data/olympic_medalists'
 
-render(<App />, document.querySelector('#app'))
+function * initialGenerator () {
+    try {
+      const db = yield dbPromise
+      const rows = yield dataExists(db)
+      const exists = rows.length > 0
+
+    if (!exists) {
+      debugger
+      const promise = yield insertMedals(medals, db)
+      console.log(promise)
+    }
+  } catch (ex) {
+    console.log('Initial insertion data')
+    console.error(ex)
+  }
+  render(<App />, document.querySelector('#app'))
+}
+
+co(initialGenerator)

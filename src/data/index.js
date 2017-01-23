@@ -3,7 +3,6 @@ import { schema, Type, fn, order } from 'lovefield'
 const schemaBuilder = schema.create('olympia', 1)
 
 export const medal = schemaBuilder.createTable('Medal')
-  .addColumn('id', Type.INTEGER)
   .addColumn('city', Type.STRING)
   .addColumn('color', Type.STRING)
   .addColumn('country', Type.STRING)
@@ -15,29 +14,72 @@ export const medal = schemaBuilder.createTable('Medal')
   .addColumn('gender', Type.STRING)
   .addColumn('sport', Type.STRING)
   .addColumn('year', Type.INTEGER)
-
-export const getDb = schemaBuilder.connect()
-
-export const dbPromise = getDb()
+  .addNullable(['firstName'])
+  .addIndex('idx_year', ['year'])
+  .addIndex('idx_lastName', ['lastName'])
+export const dbPromise = schemaBuilder.connect()
 
 export const dataExists = db => {
   const medal = db.getSchema().table('Medal')
+  debugger
   return db.select().from(medal).exec()
-    .then(rows => (rows.length > 0))
-    .catch(error => {
-      console.log('Could not connect to the Lovefield db instance')
-      console.error(error)
-    })
 }
 
 export const insertMedals = (medals, db) => {
+  debugger
   const medal = db.getSchema().table('Medal')
   const medalRows = medals.map(item => medal.createRow(item))
   return db.insert().into(medal).values(medalRows).exec()
 }
 
+export const getConditions = (column, model, formData) => {
+  let conditions = []
+
+  const {
+    fromYear,
+    toYear,
+    hostingCity,
+    discipline,
+    event,
+    country
+  } = formData
+
+  if (fromYear != null && toYear != null) {
+    if (column !== 'fromYear' && column !== 'toYear') {
+      conditions = [ ...conditions, model.year.between(fromYear, toYear) ]
+    }
+  }
+
+  if (hostingCity != null) {
+    if (column !== 'hostingCity') {
+      conditions = [ ...conditions, model.city.eq(hostingCity) ]
+    }
+  }
+
+  if (discipline != null) {
+    if (column !== 'discipline') {
+      conditions = [ ...conditions, model.discipline.eq(discipline) ]
+    }
+  }
+
+  if (event != null) {
+    if (column !== 'event') {
+      conditions = [ ...conditions, model.event.eq(event) ]
+    }
+  }
+
+  if (country != null) {
+    if (column !== 'country') {
+      conditions = [ ...conditions, model.country.eq(country) ]
+    }
+  }
+
+  return conditions
+}
+
 export const selectYears = db => {
   const medal = db.getSchema().table('Medal')
+
   return db.select(
     fn.distinct(medal.year)
   )
@@ -46,40 +88,19 @@ export const selectYears = db => {
 }
 
 export const selectHostingCities = (db, formData) => {
-  const {
-    fromYear,
-    toYear
-  } = formData
-
   const model = db.getSchema().table('Medal')
+  const conditions = getConditions('hostingCity', model, formData)
   return db.select(
       fn.distinct(model.city)
     )
     .from(model)
-    .where(
-        model.year.between(fromYear, toYear)
-      )
+    .where(...conditions)
     .orderBy(model.city, order.ASC)
 }
 
 export const selectDiscipline = (db, formData) => {
-  const {
-    fromYear,
-    toYear,
-    hostingCity
-  } = formData
-
   const model = db.getSchema().table('Medal')
-  let conditions = []
-
-  if (fromYear != null && toYear != null) {
-    conditions = [ ...conditions, model.year.between(fromYear, toYear) ]
-  }
-
-  if (hostingCity != null) {
-    conditions = [ ...conditions, model.city.eq(hostingCity) ]
-  }
-
+  const conditions = getConditions('discipline', model, formData)
   return db.select(
      fn.distinct(model.discipline)
   )
@@ -89,27 +110,8 @@ export const selectDiscipline = (db, formData) => {
 }
 
 export const selectEvent = (db, formData) => {
-  const {
-    fromYear,
-    toYear,
-    hostingCity,
-    discipline
-  } = formData
-
   const model = db.getSchema().table('Medal')
-  let conditions = []
-
-  if (fromYear != null && toYear != null) {
-    conditions = [ ...conditions, model.year.between(fromYear, toYear) ]
-  }
-
-  if (hostingCity != null) {
-    conditions = [ ...conditions, model.city.eq(hostingCity) ]
-  }
-
-  if (discipline != null) {
-    conditions = [ ...conditions, model.discipline.eq(discipline) ]
-  }
+  const conditions = getConditions('event', model, formData)
 
   return db.select(
     fn.distinct(model.event)
@@ -120,32 +122,8 @@ export const selectEvent = (db, formData) => {
 }
 
 export const selectCountry = (db, formData) => {
-  const {
-    fromYear,
-    toYear,
-    hostingCity,
-    discipline,
-    event
-  } = formData
-
   const model = db.getSchema().table('Medal')
-  let conditions = []
-
-  if (fromYear != null && toYear != null) {
-    conditions = [ ...conditions, model.year.between(fromYear, toYear) ]
-  }
-
-  if (hostingCity != null) {
-    conditions = [ ...conditions, model.city.eq(hostingCity) ]
-  }
-
-  if (discipline != null) {
-    conditions = [ ...conditions, model.discipline.eq(discipline) ]
-  }
-
-  if (event != null) {
-    conditions = [ ...conditions, model.event.eq(event) ]
-  }
+  const conditions = getConditions('country', model, formData)
 
   return db.select(
     fn.distinct(model.country)

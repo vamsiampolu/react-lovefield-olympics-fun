@@ -13,6 +13,7 @@
     "test:jest": "jest"
   },
   "dependencies": {
+    "co": "^4.6.0",
     "lovefield": "^2.1.11",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",

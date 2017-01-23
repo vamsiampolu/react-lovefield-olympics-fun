@@ -19,14 +19,12 @@ export const medal = schemaBuilder.createTable('Medal')
   .addIndex('idx_lastName', ['lastName'])
 export const dbPromise = schemaBuilder.connect()
 
-export const dataExists = db => {
+export const selectAll = db => {
   const medal = db.getSchema().table('Medal')
-  debugger
   return db.select().from(medal).exec()
 }
 
 export const insertMedals = (medals, db) => {
-  debugger
   const medal = db.getSchema().table('Medal')
   const medalRows = medals.map(item => medal.createRow(item))
   return db.insert().into(medal).values(medalRows).exec()
@@ -41,7 +39,9 @@ export const getConditions = (column, model, formData) => {
     hostingCity,
     discipline,
     event,
-    country
+    country,
+    color,
+    gender
   } = formData
 
   if (fromYear != null && toYear != null) {
@@ -71,6 +71,18 @@ export const getConditions = (column, model, formData) => {
   if (country != null) {
     if (column !== 'country') {
       conditions = [ ...conditions, model.country.eq(country) ]
+    }
+  }
+
+  if (color != null) {
+    if (column !== 'color') {
+      conditions = [ ...conditions, model.color.eq(color) ]
+    }
+  }
+
+  if (gender != null) {
+    if (column !== 'gender') {
+      conditions = [ ...conditions, model.gender.eq(gender) ]
     }
   }
 

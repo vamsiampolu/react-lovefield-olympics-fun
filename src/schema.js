@@ -1,97 +1,77 @@
 import React from 'react'
 import { Form, Message, Header } from 'semantic-ui-react'
 import ObjectField from './components/ObjectField'
+import domains from './data/column_domains'
+
+const { years, cities, countries, disciplines, events, colors, genders } = domains
+
 export const schema = {
   title: 'Olympic Medal Search',
   description: 'Search for olympic medal winners by year, hosting city, country, event and more',
   type: 'object',
+  required: [],
   properties: {
     fromYear: {
       type: 'number',
       title: 'From Year',
-      enum: [
-        1896,
-        1900,
-        1904,
-        1908
-      ]
+      enum: [ null, ...years ]
     },
     toYear: {
       type: 'number',
       title: 'To Year',
-      enum: [
-        1896,
-        1900,
-        1904,
-        1908
-      ]
+      enum: [ null, ...years ]
     },
     hostingCity: {
       type: 'string',
       title: 'Hosting City',
-      enum: [
-        'Athens',
-        'Antwerp',
-        'Amsterdam'
-      ]
+      enum: [ null, ...cities ]
     },
     discipline: {
       type: 'string',
       title: 'Discipline',
-      enum: [
-        'Athletics',
-        'Archery',
-        'Artistic G.',
-        'BMX',
-        'Badminton'
-      ]
+      enum: [ null, ...disciplines ]
     },
     event: {
       type: 'string',
       title: 'Event',
-      enum: [
-        '+100 kg (Heavyweight)',
-        '+ 100 kg (Superheavyweight)',
-        '+ 105 kg',
-        '+ 108kg, total (Superheavyweight)'
-      ]
+      enum: [ null, ...events ]
     },
     country: {
       type: 'string',
       title: 'Country',
-      enum: [
-        'AFG',
-        'ALG',
-        'AHO',
-        'ANZ',
-        'ARG'
-      ]
+      enum: [ null, ...countries ]
     },
     color: {
       type: 'string',
       title: 'Color',
-      enum: [
-        'Gold',
-        'Silver',
-        'Bronze'
-      ]
+      enum: [ null, ...colors ]
     },
     gender: {
       type: 'string',
       title: 'Gender',
-      enum: [
-        'Men',
-        'Women'
-      ]
+      enum: [null, ...genders]
     }
   }
 }
 
 const Select = props => {
-  console.log(props)
-  const { label, options } = props
-  const suiOptions = options.enumOptions.map(({ label, value }) => ({ text: label, value }))
-  return (<Form.Select options={suiOptions} placeholder={label} />)
+  const { label, options, value, required, onChange } = props
+  const suiOptions = options.enumOptions.map(({ label, value }) => {
+    const _label = label === 'null' ? '' : label
+    return { text: _label, value }
+  })
+  const onChangeFn = (event, data) => {
+    console.log('Inside on change fn')
+    console.log(data.value)
+    onChange(data.value)
+  }
+
+  return (<Form.Select
+    options={suiOptions}
+    placeholder={label}
+    value={`${value}`}
+    onChange={onChangeFn}
+  />)
 }
 
 const DescriptionField = ({ id, description }) => {
@@ -108,7 +88,6 @@ const TitleField = ({ id, required, title }) => {
 
 export const FieldTemplate = props => {
   const { id, label, help, required, description, errors, children } = props
-  console.log(id)
   const desc = id !== 'root' ? description : null
   const labelComp = id !== 'root' ? <label>{label}</label> : null
   const classNames = `${required ? 'required ' : ''}field`
@@ -125,6 +104,13 @@ export const fields = {
   DescriptionField: DescriptionField,
   TitleField: TitleField,
   ObjectField: ObjectField
+}
+
+export const validate = (formData, errors) => {
+  if (formData.status === 'editing') {
+    return errors
+  }
+  return []
 }
 
 export const widgets = { 'select': Select }

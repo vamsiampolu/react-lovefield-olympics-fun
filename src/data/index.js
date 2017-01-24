@@ -24,6 +24,11 @@ export const selectAll = db => {
   return db.select().from(medal).exec()
 }
 
+export const selectAllWithLimit = (db, perPage, offset) => {
+  const model = db.getSchema().table('Medal')
+  return db.select().from(model).limit(perPage).skip(offset).exec()
+}
+
 export const insertMedals = (medals, db) => {
   const medal = db.getSchema().table('Medal')
   const medalRows = medals.map(item => medal.createRow(item))
@@ -47,6 +52,18 @@ export const getConditions = (column, model, formData) => {
   if (fromYear != null && toYear != null) {
     if (column !== 'fromYear' && column !== 'toYear') {
       conditions = [ ...conditions, model.year.between(fromYear, toYear) ]
+    } else if (column !== 'fromYear') {
+      conditions = [ ...conditions, model.year.gte(fromYear) ]
+    } else if (column !== 'toYear') {
+      conditions = [ ...conditions, model.year.lte(toYear) ]
+    }
+  } else if (fromYear != null) {
+    if (column !== 'fromYear') {
+      conditions = [ ...conditions, model.year.gte(fromYear) ]
+    }
+  } else if (toYear != null) {
+    if (column !== 'toYear') {
+      conditions = [ ...conditions, model.year.lte(toYear) ]
     }
   }
 
@@ -97,6 +114,15 @@ export const selectYears = db => {
   )
   .from(medal)
   .orderBy(medal.year, order.ASC)
+}
+
+export const selctWithConditionsAndLimit = (db, perPage, offset, formData) => {
+  const model = db.getSchema().table('Medal')
+  const conditions = getConditions(null, model, formData)
+  const result = conditions.length > 0
+  ? db.select().from(model).where(...conditions).limit(perPage).skip(offset).exec()
+  : selectAllWithLimit(db, perPage, offset)
+  return result
 }
 
 export const selectHostingCities = (db, formData) => {

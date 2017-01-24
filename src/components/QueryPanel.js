@@ -14,12 +14,12 @@ export default class QueryPanel extends React.Component {
     }
   }
 
-  onSubmit (formData) {
-    console.log(formData)
-    if (formData.status === 'initial') {
+  onSubmit ({ status, formData }) {
+    if (status === 'initial') {
       this.props.onSubmit({})
     } else {
-      this.props.onSubmit(formData)
+      const _formData = Object.assign({}, formData)
+      this.props.onSubmit(_formData)
     }
   }
 
@@ -28,11 +28,13 @@ export default class QueryPanel extends React.Component {
   }
 
   render () {
+    console.log(this.props.formData)
     return (<Form
       className='ui form'
       schema={schema}
       fields={fields}
       validate={validate}
+      formData={this.props.formData}
       FieldTemplate={FieldTemplate}
       onChange={this.onChange}
       widgets={widgets}

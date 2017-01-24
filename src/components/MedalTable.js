@@ -29,7 +29,7 @@ export default class MedalTable extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    this.makeQuery(nextProps)
+    this.makeQuery(nextProps, true)
   }
 
   makeQuery ({ perPage, formData }) {
@@ -102,10 +102,10 @@ export default class MedalTable extends React.Component {
               marginPagesDisplayed={5}
               onPageChange={this.onPageChange}
               containerClassName='ui floated right  pagination menu'
-              pageClassName='item'
-              previousClassName='item'
-              nextClassName='item'
-              breakClassName='break item'
+              pageClassName='item cursor'
+              previousClassName='item cursor'
+              nextClassName='item cursor'
+              breakClassName='break item cursor'
             />
           </Table.Cell>
         </Table.Row>

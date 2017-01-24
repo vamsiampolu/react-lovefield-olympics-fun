@@ -15,16 +15,16 @@ export default class App extends React.Component {
 
   onSubmit (formData) {
     this.setState({ formData })
-
   }
 
   render () {
     const { formData } = this.state
+    console.log(formData)
     return (<Container fluid>
       <Grid celled divided>
         <Grid.Row>
           <Grid.Column width={3}>
-            <QueryPanel onSubmit={this.onSubmit} />
+            <QueryPanel formData={formData} onSubmit={this.onSubmit} />
           </Grid.Column>
           <Grid.Column width={13}>
             <MedalTable perPage={10} formData={formData} />

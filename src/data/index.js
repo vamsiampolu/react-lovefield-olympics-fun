@@ -119,7 +119,6 @@ export const selectYears = db => {
 export const selctWithConditionsAndLimit = (db, perPage, offset, formData) => {
   const model = db.getSchema().table('Medal')
   const conditions = getConditions(null, model, formData)
-  console.log(conditions)
   const result = conditions.length > 0
   ? db.select().from(model).where(...conditions).limit(perPage).skip(offset).exec()
   : selectAllWithLimit(db, perPage, offset)
@@ -131,7 +130,9 @@ export const getRowCount = (db, formData) => {
   const conditions = getConditions(null, model, formData)
   let query
   if (conditions.length > 0) {
-    query = db.select(fn.count(model.id)).from(model).where(...conditions)
+    query = db.select(
+      fn.count(model.id)
+    ).from(model).where(...conditions)
   } else {
     query = db.select(fn.count(model.id)).from(model)
   }

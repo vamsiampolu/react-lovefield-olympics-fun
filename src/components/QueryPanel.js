@@ -2,19 +2,6 @@ import React from 'react'
 import Form from 'react-jsonschema-form'
 import { Button } from 'semantic-ui-react'
 import { schema, widgets, fields, FieldTemplate, validate } from '../schema'
-import co from 'co'
-import { dbPromise, selectAll } from '../data/index'
-
-function * showAllMedals () {
-  try {
-    const db = yield dbPromise
-    const medals = yield selectAll(db)
-    const message = `${medals.length} Medals were found`
-    return { medals, message }
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 export default class QueryPanel extends React.Component {
   constructor (props) {
@@ -30,14 +17,9 @@ export default class QueryPanel extends React.Component {
   onSubmit (formData) {
     console.log(formData)
     if (formData.status === 'initial') {
-      co(showAllMedals)
-        .then(data => {
-          console.log(data)
-          this.setState(data)
-        })
-        .catch(error => {
-          console.error(error)
-        })
+      this.props.onSubmit({})
+    } else {
+      this.props.onSubmit(formData)
     }
   }
 

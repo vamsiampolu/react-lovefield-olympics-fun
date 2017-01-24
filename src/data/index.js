@@ -119,10 +119,24 @@ export const selectYears = db => {
 export const selctWithConditionsAndLimit = (db, perPage, offset, formData) => {
   const model = db.getSchema().table('Medal')
   const conditions = getConditions(null, model, formData)
+  console.log(conditions)
   const result = conditions.length > 0
   ? db.select().from(model).where(...conditions).limit(perPage).skip(offset).exec()
   : selectAllWithLimit(db, perPage, offset)
   return result
+}
+
+export const getRowCount = (db, formData) => {
+  const model = db.getSchema().table('Medal')
+  const conditions = getConditions(null, model, formData)
+  let query
+  if (conditions.length > 0) {
+    query = db.select(fn.count(model.id)).from(model).where(...conditions)
+  } else {
+    query = db.select(fn.count(model.id)).from(model)
+  }
+
+  return query.exec()
 }
 
 export const selectHostingCities = (db, formData) => {

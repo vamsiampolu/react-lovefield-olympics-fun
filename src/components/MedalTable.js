@@ -13,7 +13,6 @@ function * query (perPage, offset, formData, needsTotal) {
     [ total ] = yield getRowCount(db, formData)
     total = total['COUNT(*)']
   }
-  debugger
   return { total, rows }
 }
 
@@ -59,11 +58,13 @@ export default class MedalTable extends React.Component {
   }
 
   onPageChange (data) {
+    debugger
     console.log(data)
     const perPage = this.props.perPage
-    const offset = Math.ceil(data.selected * perPage)
+    const offset = Math.ceil((data.selected - 1) * perPage)
     this.setState({ offset }, () => {
-      this.makeQuery()
+      const formData = this.props.formData
+      this.makeQuery({ perPage, formData })
     })
   }
 
@@ -71,7 +72,10 @@ export default class MedalTable extends React.Component {
     const { data, total } = this.state
     if (data && data.length > 0) {
       console.log(this.state.total)
-      const columns = Object.keys(data[0])
+      let columns = Object.keys(data[0])
+      columns = columns.filter(item => {
+        return !(['eventGender', 'gender'].includes(item))
+      })
       const headerCells = columns.map(header => <Table.HeaderCell key={uuid.v4()}>{header.toUpperCase()}</Table.HeaderCell>)
 
       const header = (<Table.Header>

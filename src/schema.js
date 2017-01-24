@@ -9,55 +9,54 @@ export const schema = {
   title: 'Olympic Medal Search',
   description: 'Search for olympic medal winners by year, hosting city, country, event and more',
   type: 'object',
-  required: [],
   properties: {
     fromYear: {
       type: 'number',
       title: 'From Year',
-      enum: [ null, ...years ]
+      enum: [ undefined, ...years ]
     },
     toYear: {
       type: 'number',
       title: 'To Year',
-      enum: [ null, ...years ]
+      enum: [ undefined, ...years ]
     },
     hostingCity: {
       type: 'string',
       title: 'Hosting City',
-      enum: [ null, ...cities ]
+      enum: [ undefined, ...cities ]
     },
     discipline: {
       type: 'string',
       title: 'Discipline',
-      enum: [ null, ...disciplines ]
+      enum: [ undefined, ...disciplines ]
     },
     event: {
       type: 'string',
       title: 'Event',
-      enum: [ null, ...events ]
+      enum: [ undefined, ...events ]
     },
     country: {
       type: 'string',
       title: 'Country',
-      enum: [ null, ...countries ]
+      enum: [ undefined, ...countries ]
     },
     color: {
       type: 'string',
       title: 'Color',
-      enum: [ null, ...colors ]
+      enum: [ undefined, ...colors ]
     },
     gender: {
       type: 'string',
       title: 'Gender',
-      enum: [null, ...genders]
+      enum: [undefined, ...genders]
     }
   }
 }
 
 const Select = props => {
-  const { label, options, value, required, onChange } = props
+  const { label, options, value, required, disabled, readOnly, onChange } = props
   const suiOptions = options.enumOptions.map(({ label, value }) => {
-    const _label = label === 'null' ? '' : label
+    const _label = label === 'undefined' ? '' : label
     return { text: _label, value }
   })
   const onChangeFn = (event, data) => {
@@ -69,6 +68,10 @@ const Select = props => {
   return (<Form.Select
     options={suiOptions}
     placeholder={label}
+    required={required}
+    disabled={disabled}
+    label={null}
+    readOnly={readOnly}
     value={`${value}`}
     onChange={onChangeFn}
   />)

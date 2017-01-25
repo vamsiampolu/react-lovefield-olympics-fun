@@ -2,6 +2,7 @@ import React from 'react'
 import { Form, Message, Header } from 'semantic-ui-react'
 import ObjectField from './components/ObjectField'
 import domains from './data/column_domains'
+import uuid from 'node-uuid'
 
 const { years, cities, countries, disciplines, events, colors, genders } = domains
 
@@ -23,12 +24,13 @@ export const schema = {
     hostingCity: {
       type: 'string',
       title: 'Hosting City',
-      enum: [ undefined, ...cities ]
+      enum: [ undefined, ...cities ],
     },
     discipline: {
       type: 'string',
       title: 'Discipline',
-      enum: [ undefined, ...disciplines ]
+      enum: [ undefined, ...disciplines ],
+
     },
     event: {
       type: 'string',
@@ -57,7 +59,8 @@ const Select = props => {
   const { label, options, value, required, disabled, readOnly, onChange } = props
   const suiOptions = options.enumOptions.map(({ label, value }) => {
     const _label = label === 'undefined' ? '' : label
-    return { text: _label, value }
+    const key = uuid.v4()
+    return { text: _label, value, key }
   })
   const onChangeFn = (event, data) => {
     console.log('Inside on change fn')

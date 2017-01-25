@@ -1,4 +1,4 @@
-import { schema, Type, fn, order } from 'lovefield'
+import { schema, Type, fn, Order, op } from 'lovefield'
 
 const schemaBuilder = schema.create('olympia', 1)
 
@@ -85,6 +85,7 @@ export const getConditions = (column, model, formData) => {
     }
   }
 
+  debugger
   if (country != null) {
     if (column !== 'country') {
       conditions = [ ...conditions, model.country.eq(country) ]
@@ -113,14 +114,26 @@ export const selectYears = db => {
     fn.distinct(medal.year)
   )
   .from(medal)
-  .orderBy(medal.year, order.ASC)
+  .orderBy(medal.year, Order.ASC)
+}
+
+const selectYearsWithConditions = (db, formData) => {
+  const model = db.getSchema().table('Medal')
+  const conditions = getConditions(null, model, formData)
+
+  return db.select(
+    fn.distinct(model.year).as('year'),
+  )
+  .from(model)
+  .where(op.and(...conditions))
+  .orderBy(model.year, Order.ASC)
 }
 
 export const selctWithConditionsAndLimit = (db, perPage, offset, formData) => {
   const model = db.getSchema().table('Medal')
   const conditions = getConditions(null, model, formData)
   const result = conditions.length > 0
-  ? db.select().from(model).where(...conditions).limit(perPage).skip(offset).exec()
+  ? db.select().from(model).where(op.and(...conditions)).limit(perPage).skip(offset).exec()
   : selectAllWithLimit(db, perPage, offset)
   return result
 }
@@ -132,7 +145,7 @@ export const getRowCount = (db, formData) => {
   if (conditions.length > 0) {
     query = db.select(
       fn.count(model.id)
-    ).from(model).where(...conditions)
+    ).from(model).where(op.and(...conditions))
   } else {
     query = db.select(fn.count(model.id)).from(model)
   }
@@ -144,22 +157,22 @@ export const selectHostingCities = (db, formData) => {
   const model = db.getSchema().table('Medal')
   const conditions = getConditions('hostingCity', model, formData)
   return db.select(
-      fn.distinct(model.city)
+      fn.distinct(model.city).as('hostingCity')
     )
     .from(model)
-    .where(...conditions)
-    .orderBy(model.city, order.ASC)
+    .where(op.and(...conditions))
+    .orderBy(model.city, Order.ASC)
 }
 
 export const selectDiscipline = (db, formData) => {
   const model = db.getSchema().table('Medal')
   const conditions = getConditions('discipline', model, formData)
   return db.select(
-     fn.distinct(model.discipline)
+     fn.distinct(model.discipline).as('discipline')
   )
   .from(model)
-  .where(...conditions)
-  .orderBy(model.discipline, order.ASC)
+  .where(op.and(...conditions))
+  .orderBy(model.discipline, Order.ASC)
 }
 
 export const selectEvent = (db, formData) => {
@@ -167,11 +180,11 @@ export const selectEvent = (db, formData) => {
   const conditions = getConditions('event', model, formData)
 
   return db.select(
-    fn.distinct(model.event)
+    fn.distinct(model.event).as('event')
   )
   .from(model)
-  .where(...conditions)
-  .orderBy(model.event, order.ASC)
+  .where(op.and(...conditions))
+  .orderBy(model.event, Order.ASC)
 }
 
 export const selectCountry = (db, formData) => {
@@ -179,9 +192,42 @@ export const selectCountry = (db, formData) => {
   const conditions = getConditions('country', model, formData)
 
   return db.select(
-    fn.distinct(model.country)
+    fn.distinct(model.country).as('country')
   )
   .from(model)
-  .where(...conditions)
-  .orderBy(model.country, order.ASC)
+  .where(op.and(...conditions))
+  .orderBy(model.country, Order.ASC)
+}
+
+export const formPanelQuery = (db, column, formData) => {
+  const queryableColumns = ['year', 'hostingCity', 'discipline', 'event', 'country']
+  let queries
+  const queryFns = {
+    year: selectYearsWithConditions,
+    hostingCity: selectHostingCities,
+    discipline: selectDiscipline,
+    event: selectEvent,
+    country: selectCountry
+  }
+  if (column !== null && queryableColumns.indexOf(column)) {
+    const colIndex = queryableColumns.indexOf(column)
+    if (colIndex !== -1) {
+      queryableColumns.splice(colIndex, 1)
+    }
+    queries = Promise.all(
+      queryableColumns.map(column => {
+        const query = queryFns[column]
+        return query(db, formData).exec()
+      })
+    )
+  } else {
+    queries = Promise.all(
+      queryableColumns.map(column => {
+        const query = queryFns[column]
+        return query(db, formData).exec()
+      })
+    )
+  }
+
+  return queries
 }

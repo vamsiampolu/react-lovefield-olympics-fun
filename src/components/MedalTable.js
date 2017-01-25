@@ -29,14 +29,14 @@ export default class MedalTable extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    console.log(nextProps.formData === this.props.formData)
     this.makeQuery(nextProps, true)
   }
 
-  makeQuery ({ perPage, formData }) {
+  makeQuery ({ perPage, formData }, needsTotal) {
     const offset = this.state.offset
-    const total = this.state.total
-    let it // go
-    if (total == null) {
+    let it
+    if (needsTotal) {
       it = query(perPage, offset, formData, true)
     } else {
       it = query(perPage, offset, formData)
@@ -58,7 +58,6 @@ export default class MedalTable extends React.Component {
   }
 
   onPageChange (data) {
-    debugger
     console.log(data)
     const perPage = this.props.perPage
     const offset = Math.ceil((data.selected - 1) * perPage)
@@ -69,6 +68,7 @@ export default class MedalTable extends React.Component {
   }
 
   render () {
+    debugger
     const { data, total } = this.state
     if (data && data.length > 0) {
       console.log(this.state.total)

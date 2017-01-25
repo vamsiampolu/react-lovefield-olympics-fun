@@ -1,7 +1,7 @@
 import React from 'react'
 import Form from 'react-jsonschema-form'
 import { Button } from 'semantic-ui-react'
-import { schema, widgets, fields, FieldTemplate, validate } from '../schema'
+import { widgets, fields, FieldTemplate, validate } from '../schema'
 
 export default class QueryPanel extends React.Component {
   constructor (props) {
@@ -23,15 +23,15 @@ export default class QueryPanel extends React.Component {
     }
   }
 
-  onChange (formData) {
+  onChange ({ formData }) {
     console.log(formData)
+    this.props.onChange(formData)
   }
 
   render () {
-    console.log(this.props.formData)
     return (<Form
       className='ui form'
-      schema={schema}
+      schema={this.props.schema}
       fields={fields}
       validate={validate}
       formData={this.props.formData}

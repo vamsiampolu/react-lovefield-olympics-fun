@@ -1,7 +1,7 @@
 import React from 'react'
 import Form from 'react-jsonschema-form'
 import { Button } from 'semantic-ui-react'
-import { widgets, fields, FieldTemplate, validate } from '../schema'
+import { widgets, fields, uiSchema, FieldTemplate, validate } from '../schema'
 
 export default class QueryPanel extends React.Component {
   constructor (props) {
@@ -32,6 +32,7 @@ export default class QueryPanel extends React.Component {
     return (<Form
       className='ui form'
       schema={this.props.schema}
+      uiSchema={uiSchema}
       fields={fields}
       validate={validate}
       formData={this.props.formData}

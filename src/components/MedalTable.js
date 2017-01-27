@@ -13,6 +13,7 @@ function * query (perPage, offset, formData, needsTotal) {
     [ total ] = yield getRowCount(db, formData)
     total = total['COUNT(*)']
   }
+  console.log(rows)
   return { total, rows }
 }
 
@@ -68,7 +69,6 @@ export default class MedalTable extends React.Component {
   }
 
   render () {
-    debugger
     const { data, total } = this.state
     if (data && data.length > 0) {
       console.log(this.state.total)

@@ -62,7 +62,7 @@ export default class App extends React.Component {
       formData: {
         fromYear: undefined,
         toYear: undefined,
-        hostingCity: undefined,
+        hostingCity: [],
         discipline: undefined,
         event: undefined,
         color: undefined,
@@ -77,6 +77,7 @@ export default class App extends React.Component {
   }
 
   onChange (formData) {
+    console.log(deepDiff(this.state.formData, formData))
     const [ diff ] = deepDiff(this.state.formData, formData)
     if (diff != null && diff.path != null && diff.path[0] != null) {
       const column = diff.path[0]
@@ -84,6 +85,7 @@ export default class App extends React.Component {
         .then(data => {
           const properties = Object.assign({}, schema.properties, data)
           const newSchema = Object.assign({}, schema, { properties })
+          debugger
           this.setState({ schema: newSchema, formData })
         })
         .catch(err => {

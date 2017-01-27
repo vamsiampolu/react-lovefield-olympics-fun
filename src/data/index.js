@@ -67,28 +67,48 @@ export const getConditions = (column, model, formData) => {
     }
   }
 
-  if (hostingCity != null) {
+  if (hostingCity != null && hostingCity.length > 0) {
     if (column !== 'hostingCity') {
-      conditions = [ ...conditions, model.city.eq(hostingCity) ]
+      if (hostingCity.length > 1) {
+        const cityConditions = hostingCity.map(item => model.city.eq(item))
+        conditions = [ ...conditions, op.or(...cityConditions) ]
+      } else if (hostingCity.length === 1) {
+        conditions = [ ...conditions, model.city.eq(hostingCity[0]) ]
+      }
     }
   }
 
   if (discipline != null) {
-    if (column !== 'discipline') {
-      conditions = [ ...conditions, model.discipline.eq(discipline) ]
+    if (column !== 'discipline' && discipline.length > 0) {
+      if (discipline.length > 1) {
+        const disciplineConditions = discipline.map(item => model.discipline.eq(item))
+        conditions = [ ...conditions, op.or(...disciplineConditions) ]
+      } else {
+        conditions = [ ...conditions, model.discipline.eq(discipline[0]) ]
+      }
     }
   }
 
-  if (event != null) {
+  if (event != null && event.length > 0) {
     if (column !== 'event') {
       conditions = [ ...conditions, model.event.eq(event) ]
+      if (event.length > 1) {
+        const eventConditions = event.map(item => model.event.eq(item))
+        conditions = [ ...conditions, op.or(...eventConditions) ]
+      } else if (event.length === 1) {
+        conditions = [ ...conditions, model.event.eq(event[0]) ]
+      }
     }
   }
 
-  debugger
-  if (country != null) {
+  if (country != null && country.length > 0) {
     if (column !== 'country') {
-      conditions = [ ...conditions, model.country.eq(country) ]
+      if (event.length > 1) {
+        const countryConditions = country.map(item => model.country.eq(item))
+        conditions = [ ...conditions, op.or(...countryConditions) ]
+      } else if (country.length === 1) {
+        conditions = [ ...conditions, model.country.eq(country[0]) ]
+      }
     }
   }
 
